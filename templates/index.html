@@ -12,5 +12,9 @@
         <input type="email" name="email" id=""/>
         <button type="submit">Enter</button>
     </form>
+    {% if error %}
+        <h3>{{ error }}</h3>
+    {% endif %}
+    <a href="{{ url_for('clubs')}}">Clubs list</a>
 </body>
 </html>
