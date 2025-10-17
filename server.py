@@ -1,6 +1,6 @@
 import json
 from flask import Flask,render_template,request,redirect,flash,url_for
-
+from datetime import datetime
 
 def loadClubs():
     with open('clubs.json') as c:
@@ -39,6 +39,18 @@ def book(competition,club):
     else:
         flash("Something went wrong-please try again")
         return render_template('welcome.html', club=club, competitions=competitions)
+    
+    
+@app.template_filter("is_past")
+def is_past_filter(value, fmt="%Y-%m-%d %H:%M:%S"):
+    if isinstance(value, datetime):
+        date_value = value
+    else:
+        try:
+            date_value = datetime.strptime(value, fmt)
+        except Exception:
+            return False
+    return date_value < datetime.now()
 
 
 @app.route('/purchasePlaces',methods=['POST'])
@@ -46,6 +58,10 @@ def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
+    comp_date = datetime.strptime(competition["date"], "%Y-%m-%d %H:%M:%S")
+    if comp_date < datetime.now():
+        error = "Il est n'est pas possible de réserver des places dans une compétition déjà terminée."
+        return render_template("booking.html", club=club, competition=competition, error=error), 400
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)
