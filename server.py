@@ -66,37 +66,36 @@ def is_past_filter(value, fmt="%Y-%m-%d %H:%M:%S"):
     return date_value < datetime.now()
 
 
-@app.route('/purchasePlaces',methods=['POST'])
+@app.route('/purchasePlaces', methods=['POST'])
 def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
-    competition_date = datetime.strptime(competition['date'], "%Y-%m-%d %H:%M:%S")
-    if competition_date < datetime.now():
-        flash("Cette compétition est terminée.")
-        return render_template('welcome.html', club=club, competitions=competitions), 400
     placesRequired = int(request.form['places'])
+    
     comp_date = datetime.strptime(competition["date"], "%Y-%m-%d %H:%M:%S")
     if comp_date < datetime.now():
-        error = "Il est n'est pas possible de réserver des places dans une compétition déjà terminée."
+        error = "Il n'est pas possible de réserver des places dans une compétition déjà terminée."
         return render_template("booking.html", club=club, competition=competition, error=error), 400
-    
-    MAX_PLACES = 12
-    already_booked = club.get(competition['name'], 0)
-    total_places = placesRequired + already_booked
-    
-    if placesRequired > MAX_PLACES or total_places > MAX_PLACES:
-        error = f"You can't book more than {MAX_PLACES} seats per competition."
-        return render_template("booking.html", club=club, competition=competition, error=error), 400
-    
+
     nbrPlaces = int(competition["numberOfPlaces"]) - placesRequired
     if nbrPlaces < 0:
         error = "Le nombre de places de la compétition ne peut pas être inférieur à zéro"
         return render_template("booking.html", club=club, competition=competition, error=error), 400
-    competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
+
+    MAX_PLACES = 12
+    already_booked = club.get(competition['name'], 0)
+    total_places = placesRequired + already_booked
+
+    if placesRequired > MAX_PLACES or total_places > MAX_PLACES:
+        error = f"You can't book more than {MAX_PLACES} seats per competition."
+        return render_template("booking.html", club=club, competition=competition, error=error), 400
+
+    competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
     saveClubs(clubs)
     saveCompetitions(competitions)
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)
+
 
 @app.route("/clubs")
 def clubs_list():
