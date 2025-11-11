@@ -31,10 +31,16 @@ clubs = loadClubs()
 def index():
     return render_template('index.html')
 
-@app.route('/showSummary',methods=['POST'])
+@app.route('/showSummary', methods=['POST'])
 def showSummary():
-    club = [club for club in clubs if club['email'] == request.form['email']][0]
-    return render_template('welcome.html',club=club,competitions=competitions)
+    match_club = [club for club in clubs if club['email'] == request.form['email']]
+    if match_club:
+        club = match_club[0]
+        flash('Welcome')
+        return render_template('welcome.html', club=club, competitions=competitions)
+    else:
+        error = "Sorry, that email wasn't found."
+        return render_template('index.html', error=error), 400
 
 
 @app.route('/book/<competition>/<club>')
@@ -64,6 +70,10 @@ def is_past_filter(value, fmt="%Y-%m-%d %H:%M:%S"):
 def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
+    competition_date = datetime.strptime(competition['date'], "%Y-%m-%d %H:%M:%S")
+    if competition_date < datetime.now():
+        flash("Cette compétition est terminée.")
+        return render_template('welcome.html', club=club, competitions=competitions), 400
     placesRequired = int(request.form['places'])
     comp_date = datetime.strptime(competition["date"], "%Y-%m-%d %H:%M:%S")
     if comp_date < datetime.now():
