@@ -13,7 +13,8 @@
         <button type="submit">Enter</button>
     </form>
     {% if error %}
-        <p>{{ error }}</p>
+        <h3>{{ error }}</h3>
     {% endif %}
+    <a href="{{ url_for('clubs')}}">Clubs list</a>
 </body>
 </html>

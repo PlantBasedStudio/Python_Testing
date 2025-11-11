@@ -1,0 +1,53 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Summary | GUDLFT Registration</title>
+</head>
+<style>
+        table {
+            border-collapse: collapse;
+            width: 50%;
+            margin: 20px auto;
+        }
+
+        th, td {
+            border: 1px solid black;
+            padding: 8px 12px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #dfdfdfbd;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 60px auto;
+        }
+    </style>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <th>Club</th>
+                <th>Available Points</th>
+                {% for comp in competitions %}
+                    <th>{{ comp.name }}</th>
+                {% endfor %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for club in clubs %}
+            <tr>
+                <td>{{ club.name }}</td>
+                <td>{{ club.points }}</td>
+                {% for comp in competitions %}
+                    <td>{{ club[comp.name] if comp.name in club else 0 }}</td>
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
