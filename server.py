@@ -71,6 +71,10 @@ def purchasePlaces():
         error = f"You can't book more than {MAX_PLACES} seats per competition."
         return render_template("booking.html", club=club, competition=competition, error=error), 400
     
+    nbrPlaces = int(competition["numberOfPlaces"]) - placesRequired
+    if nbrPlaces < 0:
+        error = "Le nombre de places de la compétition ne peut pas être inférieur à zéro"
+        return render_template("booking.html", club=club, competition=competition, error=error), 400
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)
