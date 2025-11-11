@@ -1,6 +1,7 @@
 import pytest
 from server import app
 
+<<<<<<< HEAD
 import json
 import sys
 import os
@@ -8,6 +9,8 @@ import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from server import app, loadClubs, loadCompetitions
+=======
+>>>>>>> bug/pts_updates_not_reflected
 
 @pytest.fixture
 def client(monkeypatch):
