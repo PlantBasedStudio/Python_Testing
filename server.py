@@ -62,6 +62,15 @@ def purchasePlaces():
     if comp_date < datetime.now():
         error = "Il est n'est pas possible de réserver des places dans une compétition déjà terminée."
         return render_template("booking.html", club=club, competition=competition, error=error), 400
+    
+    MAX_PLACES = 12
+    already_booked = club.get(competition['name'], 0)
+    total_places = placesRequired + already_booked
+    
+    if placesRequired > MAX_PLACES or total_places > MAX_PLACES:
+        error = f"You can't book more than {MAX_PLACES} seats per competition."
+        return render_template("booking.html", club=club, competition=competition, error=error), 400
+    
     competition['numberOfPlaces'] = int(competition['numberOfPlaces'])-placesRequired
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)
