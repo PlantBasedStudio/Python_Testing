@@ -10,7 +10,7 @@ def test_booking_more_than_12_places_returns_400(client):
     response = c.post("/purchasePlaces", data=data)
     assert response.status_code == 400
     decoded = html.unescape(response.get_data(as_text=True))
-    assert "12 places" in decoded
+    assert "12 seats" in decoded
 
 
 def test_booking_12_places_ok(client):
@@ -41,7 +41,7 @@ def test_full_booking_flow_more_than_12_places_fails(client):
     response_booking = c.post("/purchasePlaces", data={"club": clubs[0]["name"], "competition": competitions[0]["name"], "places": "13"})
     assert response_booking.status_code == 400
     decoded = html.unescape(response_booking.get_data(as_text=True))
-    assert "12 places" in decoded
+    assert "12 seats" in decoded
 
 
 @pytest.fixture
@@ -59,7 +59,7 @@ def test_purchasePlaces_more_than_12_returns_400(client, mock_templates):
     with app.test_request_context(method="POST", data={"club": clubs[0]["name"], "competition": competitions[0]["name"], "places": "13"}):
         response, status = purchasePlaces()
         assert status == 400
-        assert "12 places" in response
+        assert "12 seats" in response
 
 
 def test_purchasePlaces_valid_booking(client, mock_templates):
@@ -83,4 +83,4 @@ def test_purchasePlaces_already_booked_too_many(client, mock_templates):
     with app.test_request_context(method="POST", data={"club": clubs[0]["name"], "competition": competitions[0]["name"], "places": "3"}):
         response, status = purchasePlaces()
         assert status == 400
-        assert "12 places" in response
+        assert "12 seats" in response
