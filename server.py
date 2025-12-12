@@ -52,8 +52,8 @@ def book(competition,club):
     else:
         flash("Something went wrong-please try again")
         return render_template('welcome.html', club=club, competitions=competitions)
-    
-    
+
+
 @app.template_filter("is_past")
 def is_past_filter(value, fmt="%Y-%m-%d %H:%M:%S"):
     if isinstance(value, datetime):
@@ -71,15 +71,15 @@ def purchasePlaces():
     competition = [c for c in competitions if c['name'] == request.form['competition']][0]
     club = [c for c in clubs if c['name'] == request.form['club']][0]
     placesRequired = int(request.form['places'])
-    
+
     comp_date = datetime.strptime(competition["date"], "%Y-%m-%d %H:%M:%S")
     if comp_date < datetime.now():
-        error = "Il n'est pas possible de réserver des places dans une compétition déjà terminée."
+        error = "You cannot book places in a competition that has already ended."
         return render_template("booking.html", club=club, competition=competition, error=error), 400
 
     nbrPlaces = int(competition["numberOfPlaces"]) - placesRequired
     if nbrPlaces < 0:
-        error = "Le nombre de places de la compétition ne peut pas être inférieur à zéro"
+        error = "Not enough places available in this competition."
         return render_template("booking.html", club=club, competition=competition, error=error), 400
 
     MAX_PLACES = 12
@@ -89,6 +89,15 @@ def purchasePlaces():
     if placesRequired > MAX_PLACES or total_places > MAX_PLACES:
         error = f"You can't book more than {MAX_PLACES} seats per competition."
         return render_template("booking.html", club=club, competition=competition, error=error), 400
+
+    club_points = int(club['points'])
+    if placesRequired > club_points:
+        error = f"Not enough points. You have {club_points} points but need {placesRequired}."
+        return render_template("booking.html", club=club, competition=competition, error=error), 400
+
+    club['points'] = str(club_points - placesRequired)
+
+    club[competition['name']] = total_places
 
     competition['numberOfPlaces'] = int(competition['numberOfPlaces']) - placesRequired
     saveClubs(clubs)
@@ -100,8 +109,6 @@ def purchasePlaces():
 @app.route("/clubs")
 def clubs_list():
     return render_template("/clubs.html", clubs=clubs, competitions=competitions)
-
-# TODO: Add route for points display
 
 
 @app.route('/logout')

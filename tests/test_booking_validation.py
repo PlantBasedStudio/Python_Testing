@@ -23,4 +23,4 @@ def test_purchase_too_many_places_returns_error(setup_env):
     }):
         response, status = purchasePlaces()
         assert status == 400
-        assert "Le nombre de places de la compétition ne peut pas être inférieur à zéro" in response["context"]["error"]
+        assert "Not enough places available in this competition" in response["context"]["error"]

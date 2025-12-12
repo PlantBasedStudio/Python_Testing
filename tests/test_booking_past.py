@@ -17,7 +17,7 @@ def test_booking_past_competition_returns_error(client):
     decoded = html.unescape(response.get_data(as_text=True))
 
     assert response.status_code == 400
-    assert "terminée" in decoded
+    assert "has already ended" in decoded
 
 
 def test_booking_future_competition(client):
@@ -53,7 +53,7 @@ def test_full_flow_with_past_competition(client):
     response_booking = c.post("/purchasePlaces", data=data)
     decoded = html.unescape(response_booking.get_data(as_text=True))
     assert response_booking.status_code == 400
-    assert "terminée" in decoded
+    assert "has already ended" in decoded
     
 @pytest.fixture
 def mock_templates(monkeypatch):
@@ -76,7 +76,7 @@ def test_purchase_places_in_past_competition_returns_400(client, monkeypatch, mo
                                                 }):
         response, status = purchasePlaces()
         assert status == 400
-        assert "terminée" in response
+        assert "has already ended" in response
 
 
 def test_purchase_places_in_future_competition(client, monkeypatch, mock_templates):
@@ -108,7 +108,7 @@ def test_purchase_places_in_past_competition_returns_400(client):
     decoded = html.unescape(response.get_data(as_text=True))
 
     assert response.status_code == 400
-    assert "terminée" in decoded
+    assert "has already ended" in decoded
 
 def test_today_competition_is_bookable(client):
     c, clubs, competitions = client

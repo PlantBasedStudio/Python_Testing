@@ -3,7 +3,8 @@
         {
             "name": "Test Club",
             "email": "test@club.com",
-            "points": "15"
+            "points": "12",
+            "Spring Festival": 8
         },
         {
             "name": "Other Club",
